@@ -6,10 +6,13 @@ AMCS2034 数据结构作业项目：用 **Java + JavaFX** 把 Rapid KL 接驳巴
 
 ## 运行前准备
 
-- 已安装 JDK 11 或以上（开发环境：Oracle JDK 25）
+- 已安装 JDK 17 或以上（开发环境：Oracle JDK 25；JavaFX 21 要求 JDK 17+）
 - `lib/` 文件夹内已有 4 个 OpenJFX jar：
   `javafx-base-*-win.jar`、`javafx-graphics-*-win.jar`、`javafx-controls-*-win.jar`、`javafx-swing-*-win.jar`
   （如缺失，从 https://repo1.maven.org/maven2/org/openjfx/ 下载对应版本 win 版即可）
+
+> 🎓 **组员请看 [ONBOARDING.md](ONBOARDING.md)**——NetBeans 部署步骤、
+> 零基础 Java/DSA 补课、Viva 英文问答 16 题全在里面。
 
 ## 编译与运行
 
