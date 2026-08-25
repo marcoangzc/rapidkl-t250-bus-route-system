@@ -1,3 +1,5 @@
+package com.rapidkl.t250;
+
 /**
  * Stop - represents a VERTEX in the bus route graph.
  *

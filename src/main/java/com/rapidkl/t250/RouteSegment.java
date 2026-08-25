@@ -1,3 +1,5 @@
+package com.rapidkl.t250;
+
 /**
  * RouteSegment - represents an EDGE in the bus route graph.
  *

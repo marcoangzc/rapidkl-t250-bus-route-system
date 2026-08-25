@@ -37,8 +37,8 @@
 
 ```bash
 cd 项目文件夹
-javac --module-path lib --add-modules javafx.controls -d out src/*.java
-java  --module-path lib --add-modules javafx.controls -cp out Main
+mvn clean compile     # 编译（第一次会联网下载依赖，耐心等）
+mvn javafx:run        # 运行
 ```
 
 ---
@@ -46,6 +46,8 @@ java  --module-path lib --add-modules javafx.controls -cp out Main
 ## 2. NetBeans 完整部署
 
 > Viva 当天建议用 NetBeans 打开项目演示（显得专业，tutor 也常要求 IDE）。
+> 本项目是 **Maven 项目**（Java with Maven + Simple JavaFX），NetBeans 打开即用，
+> **不需要**手动配置 Module-path 或下载 jar——依赖自动下载。
 > 以下步骤用 **Apache NetBeans 13 或更新版本** 测试过。
 
 ### 第 1 步：确认 JDK 版本
@@ -53,39 +55,29 @@ java  --module-path lib --add-modules javafx.controls -cp out Main
 `Tools → Java Platforms`。列表里必须有 **JDK 17+**（推荐 21）。
 没有就去 https://adoptium.net 下载 Temurin 21（免费），装完后在同一个窗口 `Add Platform` 注册。
 
-### 第 2 步：新建空项目
+### 第 2 步：拿到项目
 
-1. `File → New Project`
-2. 分类选 **Java with Ant** → 项目类型选 **Java Application** → Next
-3. Project Name 填 `RapidKLT250`，Location 随意
-4. **取消勾选** `Create Main Class`（我们自己有 Main.java）→ Finish
+二选一：
 
-### 第 3 步：把代码放进去
+- **A. 组长发你 zip**：解压到任意文件夹（路径不要带中文）
+- **B. 从 GitHub 克隆**：`Team → Git → Clone...` → 粘贴仓库地址 → Finish
 
-用 Windows 文件资源管理器（不要在 NetBeans 里手动新建文件）：
+### 第 3 步：打开项目
 
-1. 把本项目 `src/` 里的 **7 个 .java 文件**复制到新项目的 `src` 文件夹
-2. 把本项目的 **`lib` 整个文件夹**复制到新项目的根目录（和 `src` 平级）
-3. 回到 NetBeans，项目上右键 `Reload`（或按 F5）——`Source Packages → <default package>` 下应该出现 7 个文件
+1. `File → Open Project`
+2. 选中项目文件夹（图标带 **M** 的是 Maven 项目标志，认准它）
+3. 打开后 NetBeans 右下角会自动下载依赖（第一次约 1-2 分钟，等进度条走完）
+4. 展开 `Source Packages → com.rapidkl.t250`，能看到 7 个 .java 文件 = 成功
 
-> ⚠ 不要把文件放进子文件夹！我们的代码没有 package 声明，
-> 必须待在 `<default package>`，否则互相找不到。
+### 第 4 步：运行
 
-### 第 4 步：配置 JavaFX（最关键的一步）
+右键项目（不是文件）→ `Run`（或 F6）。
 
-右键项目 → `Properties`，改三处：
+- 正常情况：直接弹出控制台菜单
+- 若 F6 无反应：右键项目 → `Custom → Goals...` → 输入 `javafx:run` → OK
 
-| 位置 | 设置 |
-|---|---|
-| **Libraries** | 在 **Module-path** 一栏点 `Add JAR/Folder`，选中 `lib` 里全部 4 个 jar（javafx-base / graphics / controls / swing） |
-| **Build → Compiling** | `Additional Compiler Options` 填：`--add-modules javafx.controls` |
-| **Run** | `VM Options` 填：`--add-modules javafx.controls` |
-
-点 OK 保存。
-
-### 第 5 步：运行
-
-右键 `Main.java` → `Run File`（Shift+F6）。看到控制台菜单 = 成功。
+> ⚠ 运行的是**项目**不是单个文件。右键 `Main.java → Run File` 会因为
+> 缺少 JavaFX 模块参数而报错，这是 Maven JavaFX 项目的正常行为。
 
 ### 报错了？直接跳到第 8 节速查表。
 
@@ -395,13 +387,14 @@ T250 是**环线**：LRT Wangsa Maju → ... → Flat S2 Selatan → **Wangsa Me
 
 | 报错（关键词） | 原因 | 解法 |
 |---|---|---|
-| `package javafx.application does not exist` | Module-path 没配 | Properties → Libraries → Module-path 加 lib 里 4 个 jar |
-| `JavaFX runtime components are missing` | 运行时缺参数 | Properties → Run → VM Options 加 `--add-modules javafx.controls` |
-| `UnsupportedClassVersionError` / `release version 21 not supported` | JDK 太旧（<17） | 装 JDK 21（adoptium.net），Tools → Java Platforms 注册，项目里选它 |
-| `error: module not found: javafx.controls` | Compiler Options 拼错 | 检查 `--add-modules javafx.controls`（两个减号，别打成下划线） |
-| 编译过了，地图窗口一闪就关 | lib 文件夹没复制全 | 确认 4 个 jar 都在，且路径没被移动 |
-| `class Main is public, should be declared in a file named Main.java` | 文件改名了 | 文件名必须和类名一模一样 |
-| NetBeans 里看不到 .java 文件 | 放错文件夹 | 必须放在项目的 `src` 文件夹（`<default package>`） |
+| `Cannot run program "...javac"` / `invalid flag: --release` | JDK 太旧（<17） | 装 JDK 21（adoptium.net），Tools → Java Platforms 注册，项目 Properties 里选它 |
+| `JavaFX runtime components are missing` | 直接 Run 了单个 .java 文件 | 要右键**项目** → Run；或 Custom → Goals 输入 `javafx:run` |
+| `Could not resolve dependencies` / `Failed to read artifact descriptor` | 依赖没下载完 / 断网 | 检查网络，右键项目 → `Clean and Build` 重试 |
+| `The build could not be completed... proxy` | 校园网/公司网拦 Maven 仓库 | 换手机热点重试一次即可 |
+| `error: release version 17 not supported` | NetBeans 用的 JDK < 17 | Tools → Java Platforms 注册新 JDK，右键项目 → Properties → Build → Compile → Java Platform 选它 |
+| F6 没反应或弹的不是本项目 | 选错窗口/项目 | 点一下项目名再按 F6；确认标题栏是本项目 |
+| 地图窗口开了但是空白 | 显卡驱动问题（少见） | 换台电脑演示，或更新显卡驱动 |
+| `class Main is public, should be declared in a file named Main.java` | 文件被改名了 | 文件名必须和类名一模一样（git 里恢复即可） |
 
 ---
 

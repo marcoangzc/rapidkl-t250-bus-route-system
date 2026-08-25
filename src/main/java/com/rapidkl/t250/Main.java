@@ -1,3 +1,5 @@
+package com.rapidkl.t250;
+
 import java.util.List;
 import java.util.Scanner;
 

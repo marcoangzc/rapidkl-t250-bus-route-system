@@ -6,33 +6,34 @@ AMCS2034 数据结构作业项目：用 **Java + JavaFX** 把 Rapid KL 接驳巴
 
 ## 运行前准备
 
-- 已安装 JDK 17 或以上（开发环境：Oracle JDK 25；JavaFX 21 要求 JDK 17+）
-- `lib/` 文件夹内已有 4 个 OpenJFX jar：
-  `javafx-base-*-win.jar`、`javafx-graphics-*-win.jar`、`javafx-controls-*-win.jar`、`javafx-swing-*-win.jar`
-  （如缺失，从 https://repo1.maven.org/maven2/org/openjfx/ 下载对应版本 win 版即可）
+- 已安装 **JDK 17 或以上**（开发环境：Oracle JDK 25）
+- **Apache Maven**（装了 Apache NetBeans 就自带，无需另装；或从 maven.apache.org 下载）
+- JavaFX 依赖由 Maven 按 `pom.xml` 自动下载，**无需手动管理 jar**
 
 > 🎓 **组员请看 [ONBOARDING.md](ONBOARDING.md)**——NetBeans 部署步骤、
 > 零基础 Java/DSA 补课、Viva 英文问答 16 题全在里面。
 
 ## 编译与运行
 
-方式一（最简单）——双击：
+本项目是标准 **Maven 项目**（Java with Maven + Simple JavaFX 结构），NetBeans 打开即用。
+
+方式一（最简单）——双击（自动寻找 Maven，含 NetBeans 自带版）：
 
 ```
 compile.bat   → 编译
-run.bat       → 启动系统
+run.bat       → 启动系统（mvn javafx:run）
 ```
 
 方式二 —— 命令行：
 
 ```bash
-javac --module-path lib --add-modules javafx.controls -d out src/*.java
-java  --module-path lib --add-modules javafx.controls -cp out Main
+mvn clean compile     # 编译
+mvn javafx:run        # 运行（JavaFX 模块路径自动配置）
 ```
 
-方式三 —— NetBeans：新建 Java with Ant 项目 → 把 `src/*.java` 放入默认包 →
-Project Properties → Libraries → Module-path 加 `lib` 并勾选
-`javafx.controls` 模块 → 运行 Main。
+方式三 —— NetBeans：`File → Open Project` 选中本项目文件夹（含 pom.xml
+即被识别为 Maven 项目）→ 等右下角依赖下载完成 → 右键项目 `Run`。
+（若 F6 无反应：右键项目 → `Custom → Goals...` 输入 `javafx:run`。）
 
 ## 功能一览（对照评分标准）
 
@@ -53,11 +54,12 @@ Project Properties → Libraries → Module-path 加 `lib` 并勾选
 遍历后若地图窗口开着，会自动刷新：被访问站点变黄并带序号徽章，
 走过的路段加粗变绿，直观验证遍历结果。
 
-## 项目结构
+## 项目结构（Maven 标准布局）
 
 ```
 rapidkl-t250/
-├── src/
+├── pom.xml                              Maven 配置（JavaFX 21 + javafx-maven-plugin）
+├── src/main/java/com/rapidkl/t250/
 │   ├── Main.java            控制台菜单与输入验证（程序入口）
 │   ├── BusRouteGraph.java   图 ADT：邻接表 + 图操作 + DFS/BFS
 │   ├── Stop.java            顶点类（站名 / 官方站码 / 是否枢纽）
@@ -65,9 +67,8 @@ rapidkl-t250/
 │   ├── T250Data.java        真实 T250 种子数据（26 站 / 28 边）
 │   ├── GraphView.java       JavaFX 绘图面板
 │   └── NetworkViewer.java   JavaFX 窗口（独立线程，控制台不被阻塞）
-├── lib/                     OpenJFX 运行库
-├── out/                     编译输出（compile.bat 自动生成）
 ├── docs/REPORT-NOTES.md     报告素材：引言 / 伪代码 / Big-O 分析 / 参考文献
+├── test-tools/              开发期辅助工具（可选，不参与 Maven 构建）
 ├── compile.bat / run.bat
 ```
 

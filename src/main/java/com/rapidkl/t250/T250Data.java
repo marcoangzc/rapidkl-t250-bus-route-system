@@ -1,3 +1,5 @@
+package com.rapidkl.t250;
+
 /**
  * T250Data - seeds the graph with the real Rapid KL route T250.
  *
