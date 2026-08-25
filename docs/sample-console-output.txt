@@ -1,0 +1,494 @@
+============================================================================
+          RAPID KL BUS ROUTE SYSTEM  --  FEEDER SERVICE ROUTE T250
+              LRT Wangsa Maju  <->  Setapak Sentral, Kuala Lumpur
+============================================================================
+  Graph data structure : Undirected weighted graph (adjacency list)
+  Traversal algorithms : Depth First Search & Breadth First Search
+============================================================================
+[TIP] The network starts EMPTY. Choose 1 (Create Graph), then option 6
+      to load the complete real T250 route in one step.
+
+Main Menu (Press '0' to exit)
+---------------------------------------------------------------------------
+     1. Create Graph       (add / remove bus stops & route segments)
+     2. Search for a Bus Stop    (details / DFS / BFS traversal)
+     3. View the Rapid KL Bus Route Network   (JavaFX map window)
+     0. Exit
+---------------------------------------------------------------------------
+Enter your selection (0 - 3): 
+# CREATE GRAPH - GRAPH OPERATIONS
+---------------------------------------------------------------------------
+     1. Add a bus stop (vertex)
+     2. Remove a bus stop (vertex)
+     3. Add a route segment (edge)
+     4. Remove a route segment (edge)
+     5. Display the current network (adjacency list)
+     6. Load the complete T250 default route data
+     7. Clear the whole network
+     0. Back to Main Menu
+---------------------------------------------------------------------------
+Enter your selection (0 - 7): 
+# Load the Complete T250 Default Route Data
+------------------------------------------------------------------
+      Loaded 26 bus stops and 28 route segments (13.1 km total).
+      Tip: use Main Menu option 3 to see the network as a map,
+           or Search option 2 / 3 to run DFS / BFS on it.
+
+# CREATE GRAPH - GRAPH OPERATIONS
+---------------------------------------------------------------------------
+     1. Add a bus stop (vertex)
+     2. Remove a bus stop (vertex)
+     3. Add a route segment (edge)
+     4. Remove a route segment (edge)
+     5. Display the current network (adjacency list)
+     6. Load the complete T250 default route data
+     7. Clear the whole network
+     0. Back to Main Menu
+---------------------------------------------------------------------------
+Enter your selection (0 - 7): 
+================= CURRENT ROUTE NETWORK (ADJACENCY LIST) =================
+  Total stops: 26   | Route segments: 28   | Total length: 13.1 km
+---------------------------------------------------------------------------
+  LRT Wangsa Maju                   [KL2097]  *HUB*
+      --> Tar Villa Setapak                0.9 km
+      --> AEON Alpha Angle                 0.6 km
+  Tar Villa Setapak                 [KL193]
+      --> LRT Wangsa Maju                  0.9 km
+      --> PULAPOT                          0.6 km
+      --> Surau Taman Bunga Raya           1.0 km
+  PULAPOT                           [KL164]
+      --> Tar Villa Setapak                0.6 km
+      --> Surau Taman Bunga Raya           0.5 km
+  Surau Taman Bunga Raya            [KL2100]
+      --> PULAPOT                          0.5 km
+      --> TAR UMT Gate 4                   0.5 km
+      --> Tar Villa Setapak                1.0 km
+  TAR UMT Gate 4                    [-]
+      --> Surau Taman Bunga Raya           0.5 km
+      --> TAR UMT Main Gate                0.3 km
+  TAR UMT Main Gate                 [KL163]
+      --> TAR UMT Gate 4                   0.3 km
+      --> TAR UMT Gate 2                   0.3 km
+  TAR UMT Gate 2                    [-]
+      --> TAR UMT Main Gate                0.3 km
+      --> Surau Al-Amin                    0.6 km
+      --> Vista Wirajaya                   0.9 km
+  Surau Al-Amin                     [KL980]
+      --> TAR UMT Gate 2                   0.6 km
+      --> Indah Apartments                 0.4 km
+  Indah Apartments                  [KL981]
+      --> Surau Al-Amin                    0.4 km
+      --> SK Danau Kota                    0.5 km
+  SK Danau Kota                     [KL970]
+      --> Indah Apartments                 0.5 km
+      --> PV 12 Platinum Lake              0.5 km
+  PV 12 Platinum Lake               [KL942]
+      --> SK Danau Kota                    0.5 km
+      --> PV 10 Platinum Lake              0.2 km
+  PV 10 Platinum Lake               [KL1519]
+      --> PV 12 Platinum Lake              0.2 km
+      --> PV 16 Platinum Lake              0.2 km
+  PV 16 Platinum Lake               [KL1520]
+      --> PV 10 Platinum Lake              0.2 km
+      --> Columbia Hospital Danau Kota     0.4 km
+  Columbia Hospital Danau Kota      [KL1598]
+      --> PV 16 Platinum Lake              0.4 km
+      --> Setapak Central                  0.6 km
+  Setapak Central                   [KL680]  *HUB*
+      --> Columbia Hospital Danau Kota     0.6 km
+      --> Vista Wirajaya                   0.6 km
+  Vista Wirajaya                    [KL973]
+      --> Setapak Central                  0.6 km
+      --> TAR UMT Gate 2                   0.9 km
+  AEON Alpha Angle                  [KL171]
+      --> LRT Wangsa Maju                  0.6 km
+      --> Wangsa Metroview                 0.3 km
+  Wangsa Metroview                  [KL2103]
+      --> AEON Alpha Angle                 0.3 km
+      --> Desa Setapak                     0.4 km
+      --> Flat WM Sec 2 (Selatan)          0.6 km
+  Desa Setapak                      [KL1604]
+      --> Wangsa Metroview                 0.4 km
+      --> Flat WM Sec 2 (Timur)            0.4 km
+  Flat WM Sec 2 (Timur)             [KL172]
+      --> Desa Setapak                     0.4 km
+      --> Pasar & Penjaja WM Sec 2         0.3 km
+  Pasar & Penjaja WM Sec 2          [KL173]
+      --> Flat WM Sec 2 (Timur)            0.3 km
+      --> Flat WM Sec 2 (Utara)            0.3 km
+  Flat WM Sec 2 (Utara)             [KL174]
+      --> Pasar & Penjaja WM Sec 2         0.3 km
+      --> Flat WM Sec 2 (Barat)            0.3 km
+  Flat WM Sec 2 (Barat)             [KL175]
+      --> Flat WM Sec 2 (Utara)            0.3 km
+      --> Hospital Tentera (Utara)         0.4 km
+  Hospital Tentera (Utara)          [KL176]
+      --> Flat WM Sec 2 (Barat)            0.4 km
+      --> Hospital Tentera (Selatan)       0.2 km
+  Hospital Tentera (Selatan)        [KL177]
+      --> Hospital Tentera (Utara)         0.2 km
+      --> Flat WM Sec 2 (Selatan)          0.3 km
+  Flat WM Sec 2 (Selatan)           [KL178]
+      --> Hospital Tentera (Selatan)       0.3 km
+      --> Wangsa Metroview                 0.6 km
+===========================================================================
+
+# CREATE GRAPH - GRAPH OPERATIONS
+---------------------------------------------------------------------------
+     1. Add a bus stop (vertex)
+     2. Remove a bus stop (vertex)
+     3. Add a route segment (edge)
+     4. Remove a route segment (edge)
+     5. Display the current network (adjacency list)
+     6. Load the complete T250 default route data
+     7. Clear the whole network
+     0. Back to Main Menu
+---------------------------------------------------------------------------
+Enter your selection (0 - 7): 
+#(1) Add a Bus Stop
+------------------------------------------------------------------
+      Enter the name of the bus stop:       Enter the official stop code (press Enter for '-'):       Is this an interchange / hub stop? Y/N:       The bus stop "Kota Kinabalu" has been added to the network.
+
+Continue? Y/N:
+#(2) Add a Bus Stop
+------------------------------------------------------------------
+      Enter the name of the bus stop:       Enter the official stop code (press Enter for '-'):       Is this an interchange / hub stop? Y/N:       The bus stop "Kuching" has been added to the network.
+
+Continue? Y/N:
+# CREATE GRAPH - GRAPH OPERATIONS
+---------------------------------------------------------------------------
+     1. Add a bus stop (vertex)
+     2. Remove a bus stop (vertex)
+     3. Add a route segment (edge)
+     4. Remove a route segment (edge)
+     5. Display the current network (adjacency list)
+     6. Load the complete T250 default route data
+     7. Clear the whole network
+     0. Back to Main Menu
+---------------------------------------------------------------------------
+Enter your selection (0 - 7): 
+#(1) Add a Route Segment (Edge)
+------------------------------------------------------------------
+      Enter the 1st bus stop:       Enter the 2nd bus stop:       Enter the distance between them (km):       There is now a direct route between "Kota Kinabalu" and "PULAPOT" (2.5 km).
+
+Continue? Y/N:
+#(2) Add a Route Segment (Edge)
+------------------------------------------------------------------
+      Enter the 1st bus stop:       Enter the 2nd bus stop:       Enter the distance between them (km):       [!] Invalid: the two stops must be different.
+
+Continue? Y/N:
+# CREATE GRAPH - GRAPH OPERATIONS
+---------------------------------------------------------------------------
+     1. Add a bus stop (vertex)
+     2. Remove a bus stop (vertex)
+     3. Add a route segment (edge)
+     4. Remove a route segment (edge)
+     5. Display the current network (adjacency list)
+     6. Load the complete T250 default route data
+     7. Clear the whole network
+     0. Back to Main Menu
+---------------------------------------------------------------------------
+Enter your selection (0 - 7): 
+#(1) Add a Route Segment (Edge)
+------------------------------------------------------------------
+      Enter the 1st bus stop:       Enter the 2nd bus stop:       Enter the distance between them (km):       [!] There is already a direct route between "Kota Kinabalu" and "PULAPOT".
+
+Continue? Y/N:
+# CREATE GRAPH - GRAPH OPERATIONS
+---------------------------------------------------------------------------
+     1. Add a bus stop (vertex)
+     2. Remove a bus stop (vertex)
+     3. Add a route segment (edge)
+     4. Remove a route segment (edge)
+     5. Display the current network (adjacency list)
+     6. Load the complete T250 default route data
+     7. Clear the whole network
+     0. Back to Main Menu
+---------------------------------------------------------------------------
+Enter your selection (0 - 7): 
+# Remove a Route Segment (Edge)
+------------------------------------------------------------------
+      Enter the 1st bus stop:       Enter the 2nd bus stop:       [!] There is NO direct route between "TAR UMT Gate 4" and "AEON Alpha Angle".
+
+# CREATE GRAPH - GRAPH OPERATIONS
+---------------------------------------------------------------------------
+     1. Add a bus stop (vertex)
+     2. Remove a bus stop (vertex)
+     3. Add a route segment (edge)
+     4. Remove a route segment (edge)
+     5. Display the current network (adjacency list)
+     6. Load the complete T250 default route data
+     7. Clear the whole network
+     0. Back to Main Menu
+---------------------------------------------------------------------------
+Enter your selection (0 - 7): 
+# Remove a Bus Stop
+------------------------------------------------------------------
+      Enter the name of the bus stop to remove:       "Kota Kinabalu" currently has 1 direct route(s). Removing it also removes those segments.
+      Are you sure you want to remove it? Y/N:       The bus stop "Kota Kinabalu" and 1 route segment(s) were removed.
+
+# CREATE GRAPH - GRAPH OPERATIONS
+---------------------------------------------------------------------------
+     1. Add a bus stop (vertex)
+     2. Remove a bus stop (vertex)
+     3. Add a route segment (edge)
+     4. Remove a route segment (edge)
+     5. Display the current network (adjacency list)
+     6. Load the complete T250 default route data
+     7. Clear the whole network
+     0. Back to Main Menu
+---------------------------------------------------------------------------
+Enter your selection (0 - 7): 
+================= CURRENT ROUTE NETWORK (ADJACENCY LIST) =================
+  Total stops: 27   | Route segments: 28   | Total length: 13.1 km
+---------------------------------------------------------------------------
+  LRT Wangsa Maju                   [KL2097]  *HUB*
+      --> Tar Villa Setapak                0.9 km
+      --> AEON Alpha Angle                 0.6 km
+  Tar Villa Setapak                 [KL193]
+      --> LRT Wangsa Maju                  0.9 km
+      --> PULAPOT                          0.6 km
+      --> Surau Taman Bunga Raya           1.0 km
+  PULAPOT                           [KL164]
+      --> Tar Villa Setapak                0.6 km
+      --> Surau Taman Bunga Raya           0.5 km
+  Surau Taman Bunga Raya            [KL2100]
+      --> PULAPOT                          0.5 km
+      --> TAR UMT Gate 4                   0.5 km
+      --> Tar Villa Setapak                1.0 km
+  TAR UMT Gate 4                    [-]
+      --> Surau Taman Bunga Raya           0.5 km
+      --> TAR UMT Main Gate                0.3 km
+  TAR UMT Main Gate                 [KL163]
+      --> TAR UMT Gate 4                   0.3 km
+      --> TAR UMT Gate 2                   0.3 km
+  TAR UMT Gate 2                    [-]
+      --> TAR UMT Main Gate                0.3 km
+      --> Surau Al-Amin                    0.6 km
+      --> Vista Wirajaya                   0.9 km
+  Surau Al-Amin                     [KL980]
+      --> TAR UMT Gate 2                   0.6 km
+      --> Indah Apartments                 0.4 km
+  Indah Apartments                  [KL981]
+      --> Surau Al-Amin                    0.4 km
+      --> SK Danau Kota                    0.5 km
+  SK Danau Kota                     [KL970]
+      --> Indah Apartments                 0.5 km
+      --> PV 12 Platinum Lake              0.5 km
+  PV 12 Platinum Lake               [KL942]
+      --> SK Danau Kota                    0.5 km
+      --> PV 10 Platinum Lake              0.2 km
+  PV 10 Platinum Lake               [KL1519]
+      --> PV 12 Platinum Lake              0.2 km
+      --> PV 16 Platinum Lake              0.2 km
+  PV 16 Platinum Lake               [KL1520]
+      --> PV 10 Platinum Lake              0.2 km
+      --> Columbia Hospital Danau Kota     0.4 km
+  Columbia Hospital Danau Kota      [KL1598]
+      --> PV 16 Platinum Lake              0.4 km
+      --> Setapak Central                  0.6 km
+  Setapak Central                   [KL680]  *HUB*
+      --> Columbia Hospital Danau Kota     0.6 km
+      --> Vista Wirajaya                   0.6 km
+  Vista Wirajaya                    [KL973]
+      --> Setapak Central                  0.6 km
+      --> TAR UMT Gate 2                   0.9 km
+  AEON Alpha Angle                  [KL171]
+      --> LRT Wangsa Maju                  0.6 km
+      --> Wangsa Metroview                 0.3 km
+  Wangsa Metroview                  [KL2103]
+      --> AEON Alpha Angle                 0.3 km
+      --> Desa Setapak                     0.4 km
+      --> Flat WM Sec 2 (Selatan)          0.6 km
+  Desa Setapak                      [KL1604]
+      --> Wangsa Metroview                 0.4 km
+      --> Flat WM Sec 2 (Timur)            0.4 km
+  Flat WM Sec 2 (Timur)             [KL172]
+      --> Desa Setapak                     0.4 km
+      --> Pasar & Penjaja WM Sec 2         0.3 km
+  Pasar & Penjaja WM Sec 2          [KL173]
+      --> Flat WM Sec 2 (Timur)            0.3 km
+      --> Flat WM Sec 2 (Utara)            0.3 km
+  Flat WM Sec 2 (Utara)             [KL174]
+      --> Pasar & Penjaja WM Sec 2         0.3 km
+      --> Flat WM Sec 2 (Barat)            0.3 km
+  Flat WM Sec 2 (Barat)             [KL175]
+      --> Flat WM Sec 2 (Utara)            0.3 km
+      --> Hospital Tentera (Utara)         0.4 km
+  Hospital Tentera (Utara)          [KL176]
+      --> Flat WM Sec 2 (Barat)            0.4 km
+      --> Hospital Tentera (Selatan)       0.2 km
+  Hospital Tentera (Selatan)        [KL177]
+      --> Hospital Tentera (Utara)         0.2 km
+      --> Flat WM Sec 2 (Selatan)          0.3 km
+  Flat WM Sec 2 (Selatan)           [KL178]
+      --> Hospital Tentera (Selatan)       0.3 km
+      --> Wangsa Metroview                 0.6 km
+  Kuching                           [-]
+      (no direct route - isolated stop)
+===========================================================================
+
+# CREATE GRAPH - GRAPH OPERATIONS
+---------------------------------------------------------------------------
+     1. Add a bus stop (vertex)
+     2. Remove a bus stop (vertex)
+     3. Add a route segment (edge)
+     4. Remove a route segment (edge)
+     5. Display the current network (adjacency list)
+     6. Load the complete T250 default route data
+     7. Clear the whole network
+     0. Back to Main Menu
+---------------------------------------------------------------------------
+Enter your selection (0 - 7): 
+
+Main Menu (Press '0' to exit)
+---------------------------------------------------------------------------
+     1. Create Graph       (add / remove bus stops & route segments)
+     2. Search for a Bus Stop    (details / DFS / BFS traversal)
+     3. View the Rapid KL Bus Route Network   (JavaFX map window)
+     0. Exit
+---------------------------------------------------------------------------
+Enter your selection (0 - 3): 
+# SEARCH FOR A BUS STOP - TRAVERSAL OPERATIONS
+---------------------------------------------------------------------------
+     1. Search for a bus stop (details & direct connections)
+     2. DFS traversal (Depth First Search) from a starting stop
+     3. BFS traversal (Breadth First Search) from a starting stop
+     0. Back to Main Menu
+---------------------------------------------------------------------------
+Enter your selection (0 - 3): 
+# Search for a Bus Stop
+------------------------------------------------------------------
+      Enter the name of the bus stop to search:       Bus stop found!
+         Name         : TAR UMT Main Gate
+         Code         : KL163
+         Type         : Normal bus stop
+         Direct routes: 2
+            --> TAR UMT Gate 4                   0.3 km
+            --> TAR UMT Gate 2                   0.3 km
+
+# SEARCH FOR A BUS STOP - TRAVERSAL OPERATIONS
+---------------------------------------------------------------------------
+     1. Search for a bus stop (details & direct connections)
+     2. DFS traversal (Depth First Search) from a starting stop
+     3. BFS traversal (Breadth First Search) from a starting stop
+     0. Back to Main Menu
+---------------------------------------------------------------------------
+Enter your selection (0 - 3): 
+# Search for a Bus Stop
+------------------------------------------------------------------
+      Enter the name of the bus stop to search:       The bus stop "zzz nonsense" does NOT exist in the network.
+          No similar stop name found. Add new stops under Create Graph first.
+
+# SEARCH FOR A BUS STOP - TRAVERSAL OPERATIONS
+---------------------------------------------------------------------------
+     1. Search for a bus stop (details & direct connections)
+     2. DFS traversal (Depth First Search) from a starting stop
+     3. BFS traversal (Breadth First Search) from a starting stop
+     0. Back to Main Menu
+---------------------------------------------------------------------------
+Enter your selection (0 - 3): 
+# DFS Traversal (Depth First Search)
+------------------------------------------------------------------
+      Enter the starting bus stop: 
+DFS visit order starting from "LRT Wangsa Maju":
+------------------------------------------------------------------
+   No.  Bus Stop
+------------------------------------------------------------------
+   1    LRT Wangsa Maju
+   2    Tar Villa Setapak
+   3    PULAPOT
+   4    Surau Taman Bunga Raya
+   5    TAR UMT Gate 4
+   6    TAR UMT Main Gate
+   7    TAR UMT Gate 2
+   8    Surau Al-Amin
+   9    Indah Apartments
+   10   SK Danau Kota
+   11   PV 12 Platinum Lake
+   12   PV 10 Platinum Lake
+   13   PV 16 Platinum Lake
+   14   Columbia Hospital Danau Kota
+   15   Setapak Central
+   16   Vista Wirajaya
+   17   AEON Alpha Angle
+   18   Wangsa Metroview
+   19   Desa Setapak
+   20   Flat WM Sec 2 (Timur)
+   21   Pasar & Penjaja WM Sec 2
+   22   Flat WM Sec 2 (Utara)
+   23   Flat WM Sec 2 (Barat)
+   24   Hospital Tentera (Utara)
+   25   Hospital Tentera (Selatan)
+   26   Flat WM Sec 2 (Selatan)
+------------------------------------------------------------------
+Visited 26 of 27 bus stops.
+      [i] 1 stop(s) are UNREACHABLE from here - the network is disconnected.
+      (DFS explores one branch as deep as possible before backtracking.)
+      (The map window highlights these stops in yellow with numbers when open.)
+
+# SEARCH FOR A BUS STOP - TRAVERSAL OPERATIONS
+---------------------------------------------------------------------------
+     1. Search for a bus stop (details & direct connections)
+     2. DFS traversal (Depth First Search) from a starting stop
+     3. BFS traversal (Breadth First Search) from a starting stop
+     0. Back to Main Menu
+---------------------------------------------------------------------------
+Enter your selection (0 - 3): 
+# BFS Traversal (Breadth First Search)
+------------------------------------------------------------------
+      Enter the starting bus stop: 
+BFS visit order starting from "Setapak Central":
+------------------------------------------------------------------
+   No.  Bus Stop
+------------------------------------------------------------------
+   1    Setapak Central
+   2    Columbia Hospital Danau Kota
+   3    Vista Wirajaya
+   4    PV 16 Platinum Lake
+   5    TAR UMT Gate 2
+   6    PV 10 Platinum Lake
+   7    TAR UMT Main Gate
+   8    Surau Al-Amin
+   9    PV 12 Platinum Lake
+   10   TAR UMT Gate 4
+   11   Indah Apartments
+   12   SK Danau Kota
+   13   Surau Taman Bunga Raya
+   14   PULAPOT
+   15   Tar Villa Setapak
+   16   LRT Wangsa Maju
+   17   AEON Alpha Angle
+   18   Wangsa Metroview
+   19   Desa Setapak
+   20   Flat WM Sec 2 (Selatan)
+   21   Flat WM Sec 2 (Timur)
+   22   Hospital Tentera (Selatan)
+   23   Pasar & Penjaja WM Sec 2
+   24   Hospital Tentera (Utara)
+   25   Flat WM Sec 2 (Utara)
+   26   Flat WM Sec 2 (Barat)
+------------------------------------------------------------------
+Visited 26 of 27 bus stops.
+      [i] 1 stop(s) are UNREACHABLE from here - the network is disconnected.
+      (BFS explores nearest stops first, level by level.)
+      (The map window highlights these stops in yellow with numbers when open.)
+
+# SEARCH FOR A BUS STOP - TRAVERSAL OPERATIONS
+---------------------------------------------------------------------------
+     1. Search for a bus stop (details & direct connections)
+     2. DFS traversal (Depth First Search) from a starting stop
+     3. BFS traversal (Breadth First Search) from a starting stop
+     0. Back to Main Menu
+---------------------------------------------------------------------------
+Enter your selection (0 - 3): 
+
+Main Menu (Press '0' to exit)
+---------------------------------------------------------------------------
+     1. Create Graph       (add / remove bus stops & route segments)
+     2. Search for a Bus Stop    (details / DFS / BFS traversal)
+     3. View the Rapid KL Bus Route Network   (JavaFX map window)
+     0. Exit
+---------------------------------------------------------------------------
+Enter your selection (0 - 3): 
+Thank you for using the Rapid KL Bus Route System. Goodbye!

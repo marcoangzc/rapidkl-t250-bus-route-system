@@ -1,0 +1,45 @@
+1
+6
+5
+1
+Kota Kinabalu
+
+Y
+Y
+Kuching
+
+N
+N
+3
+Kota Kinabalu
+PULAPOT
+2.5
+Y
+Kota Kinabalu
+Kota Kinabalu
+1.0
+N
+3
+Kota Kinabalu
+PULAPOT
+1.0
+N
+4
+TAR UMT Gate 4
+AEON Alpha Angle
+2
+Kota Kinabalu
+Y
+5
+0
+2
+1
+tar umt main gate
+1
+zzz nonsense
+2
+LRT Wangsa Maju
+3
+Setapak Central
+0
+0
