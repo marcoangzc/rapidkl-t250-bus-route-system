@@ -13,14 +13,15 @@ import java.util.Scanner;
  *      2. Search a Bus Stop   -> DFS / BFS traversal
  *      3. View the Network    -> JavaFX graphical map window
  *
- * The network starts EMPTY so that the examiner can watch every graph
- * operation being performed; the complete real T250 route can be loaded in
- * one step through Create Graph -> option 6.
+ * The complete real T250 route (26 stops, 28 segments) is loaded
+ * automatically at startup, so a realistic network is on screen immediately;
+ * Create Graph can then modify it, or clear it (option 6) to build a
+ * network from scratch.
  */
 public class Main {
 
     private static final Scanner input = new Scanner(System.in);
-    private static final BusRouteGraph network = new BusRouteGraph();
+    private static final GraphADT network = new BusRouteGraph();
 
     /** Last DFS/BFS result, kept so the map can highlight it again later. */
     private static List<String> lastTraversalOrder = List.of();
@@ -31,6 +32,7 @@ public class Main {
     // =====================================================================
 
     public static void main(String[] args) {
+        T250Data.loadDefaultNetwork(network);   // pre-load the real T250 route
         printBanner();
 
         while (true) {
@@ -67,8 +69,8 @@ public class Main {
         System.out.println("  Graph data structure : Undirected weighted graph (adjacency list)");
         System.out.println("  Traversal algorithms : Depth First Search & Breadth First Search");
         System.out.println("============================================================================");
-        System.out.println("[TIP] The network starts EMPTY. Choose 1 (Create Graph), then option 6");
-        System.out.println("      to load the complete real T250 route in one step.");
+        System.out.println("[TIP] The T250 route is pre-loaded. Choose 3 to see the network map,");
+        System.out.println("      or 1 (Create Graph) to add / remove stops and segments.");
         System.out.println();
     }
 
@@ -95,12 +97,11 @@ public class Main {
             System.out.println("     3. Add a route segment (edge)");
             System.out.println("     4. Remove a route segment (edge)");
             System.out.println("     5. Display the current network (adjacency list)");
-            System.out.println("     6. Load the complete T250 default route data");
-            System.out.println("     7. Clear the whole network");
+            System.out.println("     6. Clear the whole network");
             System.out.println("     0. Back to Main Menu");
             System.out.println("---------------------------------------------------------------------------");
 
-            int choice = readInt("Enter your selection (0 - 7): ");
+            int choice = readInt("Enter your selection (0 - 6): ");
 
             if (choice == 0) {
                 System.out.println();
@@ -113,10 +114,9 @@ public class Main {
                 case 3: addSegmentFlow();     break;
                 case 4: removeSegmentFlow();  break;
                 case 5: displayNetworkFlow(); break;
-                case 6: loadDefaultFlow();    break;
-                case 7: clearNetworkFlow();   break;
+                case 6: clearNetworkFlow();   break;
                 default:
-                    System.out.println("[!] Invalid selection. Please enter 0 - 7 only.");
+                    System.out.println("[!] Invalid selection. Please enter 0 - 6 only.");
             }
             System.out.println();
         }
@@ -143,7 +143,7 @@ public class Main {
                 }
                 boolean hub = readYesNo("      Is this an interchange / hub stop? Y/N: ");
                 int result = network.addStop(name, code, hub);
-                if (result == BusRouteGraph.RESULT_OK) {
+                if (result == GraphADT.RESULT_OK) {
                     System.out.println("      The bus stop \"" + name + "\" has been added "
                             + "to the network.");
                 }
@@ -195,7 +195,7 @@ public class Main {
             double km = readPositiveDouble("      Enter the distance between them (km): ");
 
             int result = network.addSegment(stopA, stopB, km);
-            if (result == BusRouteGraph.RESULT_OK) {
+            if (result == GraphADT.RESULT_OK) {
                 System.out.println("      There is now a direct route between \"" + stopA
                         + "\" and \"" + stopB + "\" (" + String.format("%.1f", km) + " km).");
             } else {
@@ -218,7 +218,7 @@ public class Main {
         String stopB = askExistingStop("Enter the 2nd bus stop");
 
         int result = network.removeSegment(stopA, stopB);
-        if (result == BusRouteGraph.RESULT_OK) {
+        if (result == GraphADT.RESULT_OK) {
             System.out.println("      The direct route between \"" + stopA + "\" and \""
                     + stopB + "\" has been removed.");
         } else {
@@ -243,29 +243,7 @@ public class Main {
         System.out.println("===========================================================================");
     }
 
-    /** Option 6 - reset and reload the complete real T250 route. */
-    private static void loadDefaultFlow() {
-        System.out.println();
-        System.out.println("# Load the Complete T250 Default Route Data");
-        System.out.println("------------------------------------------------------------------");
-
-        if (!network.isEmpty()
-                && !readYesNo("      This will REPLACE the whole current network. Continue? Y/N: ")) {
-            System.out.println("      Loading cancelled. Nothing was changed.");
-            return;
-        }
-
-        network.clear();
-        T250Data.loadDefaultNetwork(network);
-        invalidateTraversal();
-
-        System.out.printf("      Loaded %d bus stops and %d route segments (%.1f km total).%n",
-                network.getStopCount(), network.getSegmentCount(), network.getTotalDistanceKm());
-        System.out.println("      Tip: use Main Menu option 3 to see the network as a map,");
-        System.out.println("           or Search option 2 / 3 to run DFS / BFS on it.");
-    }
-
-    /** Option 7 - wipe everything after double confirmation. */
+    /** Option 6 - wipe everything after double confirmation. */
     private static void clearNetworkFlow() {
         System.out.println();
         System.out.println("# Clear the Whole Network");

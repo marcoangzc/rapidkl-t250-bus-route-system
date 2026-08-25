@@ -32,13 +32,13 @@ travelled path are highlighted after every traversal.
 
 | # | Function | Menu |
 |---|----------|------|
-| 1 | Add a bus stop (vertex) with name, official code and hub flag; duplicates rejected | Create Graph → 1 |
-| 2 | Remove a bus stop together with ALL its incident segments (no dangling edges remain) | Create Graph → 2 |
-| 3 | Add a route segment (edge) between two existing stops with distance weight; self-loops and duplicate edges rejected | Create Graph → 3 |
-| 4 | Remove a route segment from both endpoints | Create Graph → 4 |
-| 5 | Display the complete network as an adjacency list | Create Graph → 5 |
-| 6 | Load the full real T250 data set (26 stops / 28 segments ≈ 13.1 km) in one step | Create Graph → 6 |
-| 7 | Clear the whole network | Create Graph → 7 |
+| 1 | Auto-load the full real T250 data set (26 stops / 28 segments ≈ 13.1 km) at startup | automatic |
+| 2 | Add a bus stop (vertex) with name, official code and hub flag; duplicates rejected | Create Graph → 1 |
+| 3 | Remove a bus stop together with ALL its incident segments (no dangling edges remain) | Create Graph → 2 |
+| 4 | Add a route segment (edge) between two existing stops with distance weight; self-loops and duplicate edges rejected | Create Graph → 3 |
+| 5 | Remove a route segment from both endpoints | Create Graph → 4 |
+| 6 | Display the complete network as an adjacency list | Create Graph → 5 |
+| 7 | Clear the whole network (to demonstrate building a graph from scratch) | Create Graph → 6 |
 | 8 | Search one stop: details, degree, all direct routes | Search → 1 |
 | 9 | DFS traversal from any stop, printed as a numbered visit-order table | Search → 2 |
 | 10 | BFS traversal from any stop, level-by-level ordering | Search → 3 |
@@ -62,6 +62,16 @@ need **O(V²)** cells, almost all of them empty (for 26 stops: ~700 wasted
 entries). Neighbour scanning during traversal also costs O(degree) per vertex,
 not O(V).
 
+**Object-oriented structure.** The graph is exposed through the `GraphADT`
+**interface** (the contract: vertex/edge operations, queries and traversals),
+and `BusRouteGraph` is the **concrete** adjacency-list implementation — the
+console UI is programmed against the interface, not the implementation. The
+traversal algorithms share an **abstract** parent `GraphTraversal` (template
+method pattern): its final `traverse()` method holds the common skeleton
+(validate the start stop, reset the visited set and order list), while the
+abstract `traverseFrom()` core is implemented by the `DepthFirstSearch`
+(recursion) and `BreadthFirstSearch` (queue) subclasses.
+
 ### 1e. Assumptions
 
 1. Inbound and outbound stops sharing a location (e.g. both sides of TAR UMT
@@ -72,6 +82,9 @@ not O(V).
    each undirected edge is stored twice (once per endpoint).
 4. The network may be temporarily disconnected when a user removes stops;
    traversals then report how many stops were unreachable.
+5. The default network is pre-loaded at startup so the system opens with the
+   real T250 route; "Clear the whole network" (Create Graph → 6) empties it
+   when a demonstration of building a graph from scratch is needed.
 
 ---
 

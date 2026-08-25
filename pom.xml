@@ -66,6 +66,11 @@
                 <version>0.0.8</version>
                 <configuration>
                     <mainClass>com.rapidkl.t250.Main</mainClass>
+                    <!-- JDK 17+: allow JavaFX to load its native libraries
+                         without printing restricted-method warnings. -->
+                    <options>
+                        <option>--enable-native-access=ALL-UNNAMED</option>
+                    </options>
                 </configuration>
             </plugin>
         </plugins>

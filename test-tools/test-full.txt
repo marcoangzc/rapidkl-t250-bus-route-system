@@ -1,10 +1,9 @@
 1
-6
 5
 1
 Kota Kinabalu
 
-Y
+N
 Y
 Kuching
 
@@ -15,10 +14,11 @@ Kota Kinabalu
 PULAPOT
 2.5
 Y
+3
 Kota Kinabalu
 Kota Kinabalu
 1.0
-N
+Y
 3
 Kota Kinabalu
 PULAPOT

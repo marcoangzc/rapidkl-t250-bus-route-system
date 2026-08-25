@@ -86,10 +86,10 @@ public class T250Data {
     };
 
     /**
-     * Loads (or reloads) the complete default T250 network into the graph.
-     * The caller is responsible for clearing the graph first if needed.
+     * Loads the complete default T250 network into the graph.
+     * Called once at startup; the caller may clear the graph first if needed.
      */
-    public static void loadDefaultNetwork(BusRouteGraph graph) {
+    public static void loadDefaultNetwork(GraphADT graph) {
         for (String[] row : DEFAULT_STOPS) {
             graph.addStop(row[0], row[1], row[2].equals("Y"));
         }

@@ -98,13 +98,13 @@ public final class GraphView extends Pane {
         SHORT_LABELS.put("PV 16 Platinum Lake",          "PV 16");
     }
 
-    private final BusRouteGraph graph;
+    private final GraphADT graph;
 
     /** Latest DFS/BFS result to overlay on the map (empty = no highlight). */
     private List<String> traversalOrder = List.of();
     private String traversalType = "";
 
-    public GraphView(BusRouteGraph graph) {
+    public GraphView(GraphADT graph) {
         this.graph = graph;
         setPrefSize(MAP_WIDTH, MAP_HEIGHT);
         setStyle("-fx-background-color: " + toCss(BG_COLOR) + ";");

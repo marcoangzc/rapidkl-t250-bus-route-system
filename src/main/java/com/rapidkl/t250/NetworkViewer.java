@@ -29,7 +29,7 @@ import java.util.List;
  */
 public class NetworkViewer extends Application {
 
-    private static BusRouteGraph sharedGraph;                 // graph being displayed
+    private static GraphADT sharedGraph;                      // graph being displayed
     private static List<String> sharedTraversal = List.of();  // last DFS/BFS order
     private static String sharedTraversalType = "";
 
@@ -38,7 +38,7 @@ public class NetworkViewer extends Application {
     private static GraphView graphView;
 
     /** Called by the console UI whenever the map should be (re)displayed. */
-    public static void showNetwork(BusRouteGraph graph, List<String> order, String type) {
+    public static void showNetwork(GraphADT graph, List<String> order, String type) {
         sharedGraph = graph;
         sharedTraversal = (order == null) ? List.of() : order;
         sharedTraversalType = (type == null) ? "" : type;

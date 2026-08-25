@@ -39,17 +39,21 @@ mvn javafx:run        # 运行（JavaFX 模块路径自动配置）
 
 | 菜单 | 功能 | Rubric 对应 |
 |---|---|---|
+| 启动 | **自动载入完整真实 T250 数据**（26 站 28 段 ≈13.1 km），无需逐站添加 | Completeness (15%) |
 | 1 → 1 | 添加巴士站（顶点），查重、可设 hub | Graph Operations (20%) |
 | 1 → 2 | 删除巴士站（顶点），自动清理所有相连边（数据完整性） | 同上 |
 | 1 → 3 | 添加路线段（边，带 km 权重），禁止自环/重复边 | 同上 |
 | 1 → 4 | 删除路线段（双边同步删除） | 同上 |
 | 1 → 5 | 邻接表文本显示全网络 | Program Output (5%) |
-| 1 → 6 | 一键载入真实 T250 全部 26 站 28 段数据 | Completeness (15%) |
-| 1 → 7 | 清空网络（二次确认） | Graph Operations |
-| 2 → 1 | 站点搜索（详情 + 直连列表 + “did you mean” 建议） | Program Output |
+| 1 → 6 | 清空网络（二次确认，可从零演示建图） | Graph Operations |
+| 2 → 1 | 站点搜索（详情 + 直连列表 + "did you mean" 建议） | Program Output |
 | 2 → 2 | **DFS 遍历**（递归实现，打印访问顺序表） | Traversal (10%) |
 | 2 → 3 | **BFS 遍历**（队列实现，逐层访问） | Traversal (10%) |
 | 3 | JavaFX 地图窗口：站点圆圈 + 边 + 距离标注 + 图例 | Program Output |
+
+**面向对象结构**（满足老师 interface / abstract / concrete 三类文件要求）：
+`GraphADT`（接口）→ `BusRouteGraph`（具体实现类）；
+`GraphTraversal`（抽象类）→ `DepthFirstSearch` / `BreadthFirstSearch`（具体子类）。
 
 遍历后若地图窗口开着，会自动刷新：被访问站点变黄并带序号徽章，
 走过的路段加粗变绿，直观验证遍历结果。
@@ -60,11 +64,15 @@ mvn javafx:run        # 运行（JavaFX 模块路径自动配置）
 rapidkl-t250/
 ├── pom.xml                              Maven 配置（JavaFX 21 + javafx-maven-plugin）
 ├── src/main/java/com/rapidkl/t250/
-│   ├── Main.java            控制台菜单与输入验证（程序入口）
-│   ├── BusRouteGraph.java   图 ADT：邻接表 + 图操作 + DFS/BFS
+│   ├── GraphADT.java        【接口】图操作合同（顶点/边/查询/遍历）
+│   ├── GraphTraversal.java  【抽象类】DFS/BFS 公共骨架（模板方法模式）
+│   ├── DepthFirstSearch.java   【具体类】DFS 递归核心
+│   ├── BreadthFirstSearch.java 【具体类】BFS 队列核心
+│   ├── BusRouteGraph.java   【具体类】邻接表图实现（图操作）
 │   ├── Stop.java            顶点类（站名 / 官方站码 / 是否枢纽）
 │   ├── RouteSegment.java    边类（目的地 + 距离权重）
 │   ├── T250Data.java        真实 T250 种子数据（26 站 / 28 边）
+│   ├── Main.java            控制台菜单与输入验证（程序入口）
 │   ├── GraphView.java       JavaFX 绘图面板
 │   └── NetworkViewer.java   JavaFX 窗口（独立线程，控制台不被阻塞）
 ├── docs/REPORT-NOTES.md     报告素材：引言 / 伪代码 / Big-O 分析 / 参考文献
@@ -74,7 +82,7 @@ rapidkl-t250/
 
 ## Viva 演示建议流程
 
-1. `1` Create Graph → `6` 载入 T250 数据（26 站 / 28 段 ≈13.1 km）
+1. 启动即自动载入 T250 数据；`1` → `5` 显示邻接表确认（26 站 / 28 段 ≈13.1 km）
 2. `3` 打开地图窗口，指认枢纽站（橙色）与普通站
 3. 回控制台 `2` Search → `2` DFS from `LRT Wangsa Maju` → 切回地图看黄色高亮路径
 4. `3` BFS 对比同一站的访问顺序差异（DFS 深入优先 vs BFS 近邻优先）

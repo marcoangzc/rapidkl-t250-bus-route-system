@@ -11,7 +11,7 @@
 1. [先把程序跑起来（两种方式）](#1-先把程序跑起来)
 2. [NetBeans 完整部署（Viva 推荐用这个）](#2-netbeans-完整部署)
 3. [这个项目到底在做什么（5 分钟版）](#3-这个项目在做什么)
-4. [7 个文件地图 + 阅读顺序](#4-文件地图)
+4. [11 个文件地图 + 阅读顺序](#4-文件地图)
 5. [Java 最小必修课（只讲项目里用到的）](#5-java-最小必修课)
 6. [DSA 核心概念（Viva 的重中之重）](#6-dsa-核心概念)
 7. [Viva 英文问答 16 题（背这个就够了）](#7-viva-英文问答)
@@ -31,7 +31,8 @@
 双击 run.bat       → 启动系统
 ```
 
-看到控制台菜单就成功了。选 `1` → `6` 载入 T250 数据，再选 `3` 看地图窗口。
+看到控制台菜单就成功了（**T250 数据已自动载入**：26 站 / 28 段）。
+选 `3` 看地图窗口，选 `1 → 5` 看邻接表。
 
 ### 方式 B：命令行（和方式 A 等效）
 
@@ -67,7 +68,7 @@ mvn javafx:run        # 运行
 1. `File → Open Project`
 2. 选中项目文件夹（图标带 **M** 的是 Maven 项目标志，认准它）
 3. 打开后 NetBeans 右下角会自动下载依赖（第一次约 1-2 分钟，等进度条走完）
-4. 展开 `Source Packages → com.rapidkl.t250`，能看到 7 个 .java 文件 = 成功
+4. 展开 `Source Packages → com.rapidkl.t250`，能看到 11 个 .java 文件 = 成功
 
 ### 第 4 步：运行
 
@@ -110,17 +111,22 @@ mvn javafx:run        # 运行
 
 ## 4. 文件地图
 
-按这个顺序读，每个文件 10-20 分钟：
+按这个顺序读，每个文件 10-20 分钟。项目共 **11 个文件**，覆盖老师要求的
+三类文件：**interface（接口）、abstract（抽象类）、concrete（具体类）**：
 
-| 顺序 | 文件 | 干什么 | 难度 |
-|---|---|---|---|
-| ① | `Stop.java` | 顶点类：站名 + 站码 + 是否枢纽。**最简单，从这里建立信心** | ⭐ |
-| ② | `RouteSegment.java` | 边类：目的地 + 公里数。同样简单 | ⭐ |
-| ③ | `T250Data.java` | 种子数据：26 站 28 边的真实数据表 | ⭐ |
-| ④ | `BusRouteGraph.java` | **核心**：图本身。增删顶点/边 + DFS + BFS | ⭐⭐⭐ |
-| ⑤ | `Main.java` | 控制台菜单：所有用户交互和输入验证 | ⭐⭐ |
-| ⑥ | `GraphView.java` | 画图：把图变成圆圈和线（JavaFX） | ⭐⭐ |
-| ⑦ | `NetworkViewer.java` | 地图窗口的外壳（标题、图例、刷新） | ⭐⭐ |
+| 顺序 | 文件 | 类型 | 干什么 | 难度 |
+|---|---|---|---|---|
+| ① | `Stop.java` | concrete | 顶点类：站名 + 站码 + 是否枢纽。**最简单，从这里建立信心** | ⭐ |
+| ② | `RouteSegment.java` | concrete | 边类：目的地 + 公里数 | ⭐ |
+| ③ | `T250Data.java` | concrete | 种子数据：26 站 28 边的真实数据表 | ⭐ |
+| ④ | `GraphADT.java` | **interface** | 图的「合同」：定义图该会哪些操作，不写实现 | ⭐⭐ |
+| ⑤ | `BusRouteGraph.java` | concrete | **核心**：implements GraphADT，邻接表实现增删顶点/边 | ⭐⭐⭐ |
+| ⑥ | `GraphTraversal.java` | **abstract** | DFS/BFS 的公共骨架（模板方法模式） | ⭐⭐⭐ |
+| ⑦ | `DepthFirstSearch.java` | concrete | DFS 具体算法：递归走到底再回头 | ⭐⭐ |
+| ⑧ | `BreadthFirstSearch.java` | concrete | BFS 具体算法：队列逐层扩散 | ⭐⭐ |
+| ⑨ | `Main.java` | concrete | 控制台菜单：所有用户交互和输入验证 | ⭐⭐ |
+| ⑩ | `GraphView.java` | concrete | 画图：把图变成圆圈和线（JavaFX） | ⭐⭐ |
+| ⑪ | `NetworkViewer.java` | concrete | 地图窗口的外壳（标题、图例、刷新） | ⭐⭐ |
 
 > 分工建议：每人认领 1-2 个文件当「Owner」，Viva 时主讲自己的部分，
 > 但其他文件也要能讲个大概（见第 9 节）。
@@ -182,6 +188,24 @@ sb.append("...")                                           // StringBuilder 拼�
 因为整个程序只需要一份菜单逻辑、一个图实例。读代码时看到
 `network.addStop(...)`，`network` 就是那个唯一的图对象。
 
+### 5.5 interface 和 abstract（老师要求的三类文件，Viva 必考）
+
+老师要求项目必须有 **interface、abstract、concrete** 三类文件，本项目对应：
+
+- **`GraphADT.java`（接口 interface）**：只写「图应该会做什么」，不写怎么做——
+  方法签名 + 分号，没有方法体。错误码常量（`RESULT_OK` 等）也定义在这里。
+- **`BusRouteGraph.java`（具体类，implements）**：把接口里每个方法真正写出来
+  （邻接表实现）。Main 只面对接口编程：`GraphADT network = new BusRouteGraph()`
+  ——以后就算换成矩阵存储，Main 一行都不用改。
+- **`GraphTraversal.java`（抽象类 abstract class）**：DFS 和 BFS 的公共骨架。
+  用**模板方法模式**：`traverse()` 是 final 的固定流程（验证起点 → 清空状态 →
+  调核心算法），核心算法 `traverseFrom()` 是 abstract 的，强制子类自己实现。
+- **`DepthFirstSearch` / `BreadthFirstSearch`（具体子类，extends）**：各自实现
+  `traverseFrom()`——DFS 用递归，BFS 用队列。
+
+**interface vs abstract 一句话**：接口是「合同」（can-do，全抽象、无字段无构造器）；
+抽象类是「半成品」（is-a，可以有字段、构造器和已实现的方法，子类继承复用）。
+
 ---
 
 ## 6. DSA 核心概念
@@ -215,16 +239,16 @@ adjacency = {
 
 ### 6.3 DFS 深度优先（递归，走到底再回头）
 
-代码就这几行（BusRouteGraph.java）：
+核心就这几行（`DepthFirstSearch.java`；公共骨架在抽象父类 `GraphTraversal` 里）：
 
 ```java
-private void dfsVisit(String current, Set<String> visited, List<String> order) {
-    visited.add(current);          // ① 先点名！
-    order.add(current);
-    for (RouteSegment seg : adjacency.get(current)) {
+// DepthFirstSearch.java —— 算法核心
+private void dfsVisit(String current) {
+    visit(current);                       // ① 先点名！（父类方法：加 visited + 记顺序）
+    for (RouteSegment seg : graph.getNeighbours(current)) {
         String neighbour = seg.getDestination();
-        if (!visited.contains(neighbour)) {   // ② 没走过的邻居才进去
-            dfsVisit(neighbour, visited, order);   // ③ 递归：一头扎到底
+        if (!visited.contains(neighbour)) {          // ② 没走过的邻居才进去
+            dfsVisit(neighbour);                     // ③ 递归：一头扎到底
         }
     }
 }
@@ -244,15 +268,17 @@ private void dfsVisit(String current, Set<String> visited, List<String> order) {
 
 ### 6.4 BFS 广度优先（队列，一圈一圈扩散）
 
+核心就这几行（`BreadthFirstSearch.java`）：
+
 ```java
-visited.add(startName);
+visit(startName);                      // 入队时就点名！
 queue.addLast(startName);              // 起点入队
 while (!queue.isEmpty()) {
     String current = queue.pollFirst();   // 队头出队
-    order.add(current);
-    for (RouteSegment seg : adjacency.get(current)) {
+    for (RouteSegment seg : graph.getNeighbours(current)) {
+        String neighbour = seg.getDestination();
         if (!visited.contains(neighbour)) {
-            visited.add(neighbour);        // 注意：入队时就点名！
+            visit(neighbour);
             queue.addLast(neighbour);
         }
     }
@@ -381,6 +407,21 @@ T250 是**环线**：LRT Wangsa Maju → ... → Flat S2 Selatan → **Wangsa Me
     is via the fewest segments. For real shortest distance we would upgrade to
     Dijkstra's algorithm with the km weights. （BFS 最少段数；真最短路要 Dijkstra）
 
+17. **Q: Why does the project have an interface (GraphADT) and an abstract class (GraphTraversal)?**
+    A: The interface defines WHAT a route graph must do, so Main is programmed
+    against the contract and decoupled from the adjacency-list implementation.
+    The abstract class holds the shared traversal skeleton — validate the start
+    stop, reset the state, then run the core — using the template method
+    pattern; the DFS and BFS subclasses only implement their own core.
+    （接口定合同解耦；抽象类放公共骨架 = 模板方法模式）
+
+18. **Q: What is the difference between an interface and an abstract class?**
+    A: An interface is a pure contract — method signatures plus constants, no
+    state and no constructors. An abstract class is a partial implementation
+    that CAN hold fields, constructors and concrete methods shared by its
+    subclasses. A class can implement many interfaces but extend only one
+    abstract class. （接口纯合同无状态；抽象类半成品可有状态，单继承多实现）
+
 ---
 
 ## 8. 常见报错速查表
@@ -389,6 +430,7 @@ T250 是**环线**：LRT Wangsa Maju → ... → Flat S2 Selatan → **Wangsa Me
 |---|---|---|
 | `Cannot run program "...javac"` / `invalid flag: --release` | JDK 太旧（<17） | 装 JDK 21（adoptium.net），Tools → Java Platforms 注册，项目 Properties 里选它 |
 | `JavaFX runtime components are missing` | 直接 Run 了单个 .java 文件 | 要右键**项目** → Run；或 Custom → Goals 输入 `javafx:run` |
+| `Unsupported JavaFX configuration: classes were loaded from 'unnamed module'` + 一串 WARNING | 用 Run File 跑了单个文件（JavaFX 走了 classpath），或 JDK 25 的原生访问提示 | **无害，不影响功能**。右键**项目** Run 就没有第一条；后几种 WARNING 只在 JDK 24+ 出现，组员用 JDK 17/21 完全看不到 |
 | `Could not resolve dependencies` / `Failed to read artifact descriptor` | 依赖没下载完 / 断网 | 检查网络，右键项目 → `Clean and Build` 重试 |
 | `The build could not be completed... proxy` | 校园网/公司网拦 Maven 仓库 | 换手机热点重试一次即可 |
 | `error: release version 17 not supported` | NetBeans 用的 JDK < 17 | Tools → Java Platforms 注册新 JDK，右键项目 → Properties → Build → Compile → Java Platform 选它 |
@@ -404,16 +446,16 @@ T250 是**环线**：LRT Wangsa Maju → ... → Flat S2 Selatan → **Wangsa Me
 
 | 成员 | 主讲模块 | 必须能白板画出的图 |
 |---|---|---|
-| A | `Stop` + `RouteSegment` + `T250Data`（数据层） | 一个站对象里有什么；种子数据怎么进图 |
+| A | `Stop` + `RouteSegment` + `T250Data` + `GraphADT` 接口（数据层） | 一个站对象里有什么；接口里定义了哪些操作 |
 | B | `BusRouteGraph` 的图操作（增删顶点/边） | 删一个中间站前后，邻接表的变化 |
-| C | `BusRouteGraph` 的 DFS + BFS | 同一个起点两种遍历的访问顺序对比 |
+| C | `GraphTraversal` 抽象类 + `DepthFirstSearch`/`BreadthFirstSearch` | 同一起点两种遍历对比；模板方法骨架图 |
 | D | `Main`（菜单/验证）+ `GraphView`/`NetworkViewer`（画图） | 用户输入怎么变成图上的高亮 |
 
 > 所有人都要会：第 6 节的概念 + 第 7 节全部 16 题（tutor 会随机抽人）。
 
 ### 演示流程（5-8 分钟，照着走）
 
-1. `1` Create Graph → `6` 载入 T250 数据（报出 26 站 / 28 段 / 13.1 km）
+1. 启动即已载入 T250 数据（报出 26 站 / 28 段 / 13.1 km）；`1` → `5` 显示邻接表确认
 2. `3` 打开地图：指橙色 = 枢纽站，蓝 = 普通站，线上数字 = 公里
 3. `2` → `2` DFS 从 `LRT Wangsa Maju`：念前 5 站顺序，切地图看黄色高亮和序号徽章
 4. `2` → `3` BFS 同起点：对比「DFS 一条路走到底，BFS 一圈一圈」

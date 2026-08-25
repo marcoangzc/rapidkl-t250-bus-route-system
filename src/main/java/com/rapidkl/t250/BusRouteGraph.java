@@ -1,16 +1,14 @@
 package com.rapidkl.t250;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
- * BusRouteGraph - the core graph data structure of the Rapid KL Bus Route System.
+ * BusRouteGraph - the CONCRETE implementation of the {@link GraphADT}
+ * interface: the core graph data structure of the Rapid KL Bus Route System.
  *
  * The T250 route network is modelled as an UNDIRECTED, WEIGHTED graph
  * implemented with an ADJACENCY LIST:
@@ -29,17 +27,10 @@ import java.util.Set;
  * makes the console display and the DFS/BFS visit order stable and easy to
  * verify during testing.
  */
-public class BusRouteGraph {
+public class BusRouteGraph implements GraphADT {
 
-    // Result codes returned by the graph operations and translated into
-    // friendly messages by describeResult(). This keeps data integrity checks
-    // inside the graph class itself (no invalid state can ever be created).
-    public static final int RESULT_OK            = 0;
-    public static final int ERR_STOP_NOT_FOUND   = 1;
-    public static final int ERR_STOP_EXISTS      = 2;
-    public static final int ERR_SEGMENT_EXISTS   = 3;
-    public static final int ERR_SEGMENT_MISSING  = 4;
-    public static final int ERR_SELF_LOOP        = 5;
+    // Result codes (RESULT_OK, ERR_...) are declared in the GraphADT
+    // interface and inherited by this implementing class.
 
     /** All vertices (bus stops), keyed by their unique name. */
     private final Map<String, Stop> stops = new LinkedHashMap<>();
@@ -240,6 +231,7 @@ public class BusRouteGraph {
      * Translates a graph operation result code into a readable message,
      * so the same wording is reused everywhere in the console UI.
      */
+    @Override
     public String describeResult(int resultCode, String stopA, String stopB) {
         switch (resultCode) {
             case RESULT_OK:           return "";
@@ -259,62 +251,26 @@ public class BusRouteGraph {
     // =====================================================================
 
     /**
-     * DEPTH FIRST SEARCH (DFS) - recursive implementation.
-     * Explores as far as possible along each branch before backtracking,
-     * following the order in which neighbours were added to the stop.
+     * DEPTH FIRST SEARCH - delegates to the DepthFirstSearch concrete class,
+     * which extends the abstract GraphTraversal parent (template method
+     * pattern: the shared skeleton lives in the parent, the recursive core
+     * lives in the subclass).
      *
      * @param startName stop where the traversal begins
      * @return the visit order; empty list if the start stop does not exist
      */
+    @Override
     public List<String> depthFirstSearch(String startName) {
-        List<String> visitOrder = new ArrayList<>();
-        if (!stops.containsKey(startName)) {
-            return visitOrder;
-        }
-        dfsVisit(startName, new HashSet<>(), visitOrder);
-        return visitOrder;
-    }
-
-    private void dfsVisit(String current, Set<String> visited, List<String> visitOrder) {
-        visited.add(current);                    // mark BEFORE recursing: prevents
-        visitOrder.add(current);                 // infinite loops on cyclic routes
-        for (RouteSegment seg : adjacency.get(current)) {
-            String neighbour = seg.getDestination();
-            if (!visited.contains(neighbour)) {
-                dfsVisit(neighbour, visited, visitOrder);
-            }
-        }
+        return new DepthFirstSearch(this).traverse(startName);
     }
 
     /**
-     * BREADTH FIRST SEARCH (BFS) - uses a queue (ArrayDeque).
-     * Visits all stops nearest to the source first, level by level, which
-     * corresponds to "fewest segments travelled" ordering on our unweighted
-     * view of the network.
+     * BREADTH FIRST SEARCH - delegates to the BreadthFirstSearch concrete
+     * class (queue-based, visits nearest stops first, level by level).
      */
+    @Override
     public List<String> breadthFirstSearch(String startName) {
-        List<String> visitOrder = new ArrayList<>();
-        if (!stops.containsKey(startName)) {
-            return visitOrder;
-        }
-        Set<String> visited = new HashSet<>();
-        ArrayDeque<String> queue = new ArrayDeque<>();
-
-        visited.add(startName);                  // enqueue + mark at insert time
-        queue.addLast(startName);                // so nothing enters the queue twice
-
-        while (!queue.isEmpty()) {
-            String current = queue.pollFirst();
-            visitOrder.add(current);
-            for (RouteSegment seg : adjacency.get(current)) {
-                String neighbour = seg.getDestination();
-                if (!visited.contains(neighbour)) {
-                    visited.add(neighbour);
-                    queue.addLast(neighbour);
-                }
-            }
-        }
-        return visitOrder;
+        return new BreadthFirstSearch(this).traverse(startName);
     }
 
     // =====================================================================
