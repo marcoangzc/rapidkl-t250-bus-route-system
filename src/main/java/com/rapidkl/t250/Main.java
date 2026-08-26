@@ -78,7 +78,7 @@ public class Main {
         System.out.println("Main Menu (Press '0' to exit)");
         System.out.println("---------------------------------------------------------------------------");
         System.out.println("     1. Create Graph       (add / remove bus stops & route segments)");
-        System.out.println("     2. Search for a Bus Stop    (details / DFS / BFS traversal)");
+        System.out.println("     2. Route Search    (DFS / BFS with goal state)");
         System.out.println("     3. View the Rapid KL Bus Route Network   (JavaFX map window)");
         System.out.println("     0. Exit");
         System.out.println("---------------------------------------------------------------------------");
@@ -264,15 +264,14 @@ public class Main {
 
     private static void searchMenu() {
         while (true) {
-            System.out.println("# SEARCH FOR A BUS STOP - TRAVERSAL OPERATIONS");
+            System.out.println("# ROUTE SEARCH - GRAPH TRAVERSAL ALGORITHMS");
             System.out.println("---------------------------------------------------------------------------");
-            System.out.println("     1. Search for a bus stop (details & direct connections)");
-            System.out.println("     2. DFS traversal (Depth First Search) from a starting stop");
-            System.out.println("     3. BFS traversal (Breadth First Search) from a starting stop");
+            System.out.println("     1. DFS (Depth First Search): start stop -> goal stop");
+            System.out.println("     2. BFS (Breadth First Search): start stop -> goal stop");
             System.out.println("     0. Back to Main Menu");
             System.out.println("---------------------------------------------------------------------------");
 
-            int choice = readInt("Enter your selection (0 - 3): ");
+            int choice = readInt("Enter your selection (0 - 2): ");
 
             if (choice == 0) {
                 System.out.println();
@@ -280,56 +279,27 @@ public class Main {
             }
 
             switch (choice) {
-                case 1: searchStopFlow();               break;
-                case 2: traversalFlow(true);            break;
-                case 3: traversalFlow(false);           break;
+                case 1: traversalFlow(true);  break;
+                case 2: traversalFlow(false); break;
                 default:
-                    System.out.println("[!] Invalid selection. Please enter 0 - 3 only.");
+                    System.out.println("[!] Invalid selection. Please enter 0 - 2 only.");
             }
             System.out.println();
         }
     }
 
-    /** Search option 1 - full details of one stop. */
-    private static void searchStopFlow() {
-        System.out.println();
-        System.out.println("# Search for a Bus Stop");
-        System.out.println("------------------------------------------------------------------");
-        if (guardEmptyNetwork()) {
-            return;
-        }
-
-        String query = readNonEmptyLine("      Enter the name of the bus stop to search: ");
-        String resolved = network.resolveStopName(query);
-
-        if (resolved == null) {
-            System.out.println("      The bus stop \"" + query + "\" does NOT exist in the network.");
-            printSuggestions(query);
-            return;
-        }
-
-        Stop stop = network.getStop(resolved);
-        List<RouteSegment> neighbours = network.getNeighbours(resolved);
-
-        System.out.println("      Bus stop found!");
-        System.out.println("         Name         : " + stop.getName());
-        System.out.println("         Code         : " + stop.getCode());
-        System.out.println("         Type         : " + (stop.isHub()
-                ? "Interchange / hub" : "Normal bus stop"));
-        System.out.println("         Direct routes: " + neighbours.size());
-        for (RouteSegment seg : neighbours) {
-            System.out.printf("            --> %-32s %.1f km%n",
-                    seg.getDestination(), seg.getDistanceKm());
-        }
-    }
-
     /**
-     * Search options 2 & 3 - run DFS or BFS from a chosen start stop,
-     * print the numbered visit order and refresh the map highlight.
+     * Search options 1 & 2 - run DFS or BFS with an optional GOAL STATE.
+     *
+     * The user enters a start stop and (optionally) a destination stop.
+     * With a goal, the traversal stops as soon as the destination is
+     * reached and the discovered route is printed with its segment count
+     * and total distance. Without a goal (press Enter), the whole
+     * connected component is traversed and shown as a numbered list.
      */
     private static void traversalFlow(boolean isDfs) {
-        String title = isDfs ? "# DFS Traversal (Depth First Search)"
-                             : "# BFS Traversal (Breadth First Search)";
+        String title = isDfs ? "# DFS Search (Depth First Search)"
+                             : "# BFS Search (Breadth First Search)";
         System.out.println();
         System.out.println(title);
         System.out.println("------------------------------------------------------------------");
@@ -337,9 +307,13 @@ public class Main {
             return;
         }
 
-        String start = askExistingStop("Enter the starting bus stop");
-        List<String> order = isDfs ? network.depthFirstSearch(start)
-                                   : network.breadthFirstSearch(start);
+        String start = askExistingStop("Enter the START bus stop");
+        String goal = readOptionalExistingStop(
+                "Enter the DESTINATION stop (goal state), or press Enter to traverse ALL stops");
+
+        GraphTraversal algorithm = isDfs ? new DepthFirstSearch(network)
+                                         : new BreadthFirstSearch(network);
+        List<String> order = algorithm.traverse(start, goal);
 
         System.out.println();
         System.out.println((isDfs ? "DFS" : "BFS") + " visit order starting from \""
@@ -351,21 +325,92 @@ public class Main {
             System.out.printf("   %-4d %s%n", i + 1, order.get(i));
         }
         System.out.println("------------------------------------------------------------------");
-        System.out.printf("Visited %d of %d bus stops.%n", order.size(), network.getStopCount());
 
-        if (order.size() < network.getStopCount()) {
-            System.out.println("      [i] " + (network.getStopCount() - order.size())
-                    + " stop(s) are UNREACHABLE from here - the network is disconnected.");
+        if (!goal.isEmpty()) {
+            reportGoalSearch(algorithm, isDfs, start, goal);
+        } else {
+            System.out.printf("Visited %d of %d bus stops.%n",
+                    order.size(), network.getStopCount());
+            if (order.size() < network.getStopCount()) {
+                System.out.println("      [i] " + (network.getStopCount() - order.size())
+                        + " stop(s) are UNREACHABLE from here - the network is disconnected.");
+            }
+            System.out.println(isDfs
+                    ? "      (DFS explores one branch as deep as possible before backtracking.)"
+                    : "      (BFS explores nearest stops first, level by level.)");
         }
-        System.out.println(isDfs
-                ? "      (DFS explores one branch as deep as possible before backtracking.)"
-                : "      (BFS explores nearest stops first, level by level.)");
 
         lastTraversalOrder = order;
         lastTraversalType = isDfs ? "DFS" : "BFS";
         refreshViewerIfOpen();
         System.out.println("      (The map window highlights these stops in yellow with numbers"
                 + " when open.)");
+    }
+
+    /**
+     * Prints the outcome of a goal-directed search: the found route with
+     * segment count and total km, or a clear unreachable message.
+     */
+    private static void reportGoalSearch(GraphTraversal algorithm,
+                                         boolean isDfs, String start, String goal) {
+        System.out.println("Stops explored before termination: "
+                + algorithm.getVisitCount() + " of " + network.getStopCount() + ".");
+        System.out.println();
+
+        if (!algorithm.isGoalReached()) {
+            System.out.println("      >>> RESULT: The destination \"" + goal
+                    + "\" is UNREACHABLE from \"" + start + "\".");
+            System.out.println("          The search exhausted every reachable stop without"
+                    + " finding it.");
+            return;
+        }
+
+        List<String> path = algorithm.getGoalPath();
+        double totalKm = 0;
+        for (int i = 0; i + 1 < path.size(); i++) {
+            totalKm += segmentDistance(path.get(i), path.get(i + 1));
+        }
+
+        System.out.println("      >>> GOAL FOUND! Route from \"" + start + "\" to \""
+                + goal + "\":");
+        System.out.println("      ------------------------------------------------------------------");
+        printPath(path);
+        System.out.println("      ------------------------------------------------------------------");
+        System.out.printf("      Segments travelled : %d   |   Total distance: %.1f km%n",
+                path.size() - 1, totalKm);
+
+        if (!isDfs) {
+            System.out.println("      (BFS guarantee: this route uses the FEWEST segments possible.)");
+        } else {
+            System.out.println("      (DFS finds A valid route quickly, but it is not always the"
+                    + " fewest-segment one - compare with BFS!)");
+        }
+    }
+
+    /** Distance of the direct segment between two stops (0 if none). */
+    private static double segmentDistance(String stopA, String stopB) {
+        for (RouteSegment seg : network.getNeighbours(stopA)) {
+            if (seg.getDestination().equals(stopB)) {
+                return seg.getDistanceKm();
+            }
+        }
+        return 0;                                // defensive: should not happen
+    }
+
+    /** Prints a route as one wrapped line of "Stop -> Stop -> ...". */
+    private static void printPath(List<String> path) {
+        StringBuilder line = new StringBuilder("       ");
+        for (int i = 0; i < path.size(); i++) {
+            if (i > 0) {
+                line.append("  ->  ");
+            }
+            line.append(path.get(i));
+            if (line.length() > 62 && i + 1 < path.size()) {
+                System.out.println(line);
+                line = new StringBuilder("         ");
+            }
+        }
+        System.out.println(line);
     }
 
     // =====================================================================
@@ -460,6 +505,26 @@ public class Main {
             }
             System.out.println("      [!] The bus stop \"" + raw + "\" does not exist in the network.");
             printSuggestions(raw);
+        }
+    }
+
+    /**
+     * Like askExistingStop, but pressing ENTER returns "" (no goal state:
+     * the traversal then covers the whole connected component).
+     */
+    private static String readOptionalExistingStop(String prompt) {
+        while (true) {
+            String raw = readLine("      " + prompt + ": ");
+            if (raw.isEmpty()) {
+                return "";
+            }
+            String resolved = network.resolveStopName(raw);
+            if (resolved != null) {
+                return resolved;
+            }
+            System.out.println("      [!] The bus stop \"" + raw + "\" does not exist in the network.");
+            printSuggestions(raw);
+            System.out.println("          (Press Enter without typing a name to skip the goal.)");
         }
     }
 

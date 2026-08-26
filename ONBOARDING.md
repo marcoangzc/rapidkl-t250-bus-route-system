@@ -104,7 +104,7 @@ mvn javafx:run        # 运行
 程序三大功能（对应主菜单 1/2/3）：
 
 1. **Create Graph**：增删顶点和边（带查重、防自环、删站自动清边）
-2. **Search**：DFS / BFS 遍历，打印访问顺序表
+2. **Route Search**：DFS / BFS，输入起点 + 终点（goal state）找路线；终点留空则全网遍历
 3. **View**：JavaFX 地图窗口，遍历过的站变黄 + 序号徽章
 
 ---
@@ -242,15 +242,22 @@ adjacency = {
 核心就这几行（`DepthFirstSearch.java`；公共骨架在抽象父类 `GraphTraversal` 里）：
 
 ```java
-// DepthFirstSearch.java —— 算法核心
-private void dfsVisit(String current) {
+// DepthFirstSearch.java —— 算法核心（带 goal state 提前终止）
+private boolean dfsVisit(String current) {
     visit(current);                       // ① 先点名！（父类方法：加 visited + 记顺序）
+    if (goal != null && current.equals(goal)) {
+        return true;                      // ② 到达终点！true 一路弹栈 = 提前停止
+    }
     for (RouteSegment seg : graph.getNeighbours(current)) {
         String neighbour = seg.getDestination();
-        if (!visited.contains(neighbour)) {          // ② 没走过的邻居才进去
-            dfsVisit(neighbour);                     // ③ 递归：一头扎到底
+        if (!visited.contains(neighbour)) {          // ③ 没走过的邻居才进去
+            recordParent(neighbour, current);        //    记住「从哪来的」→ 之后能重建路径
+            if (dfsVisit(neighbour)) {
+                return true;              // ④ 更深处找到了 → 不再探索别的分支
+            }
         }
     }
+    return false;
 }
 ```
 
@@ -271,14 +278,22 @@ private void dfsVisit(String current) {
 核心就这几行（`BreadthFirstSearch.java`）：
 
 ```java
+// BreadthFirstSearch.java —— 算法核心（带 goal state 提前终止）
 visit(startName);                      // 入队时就点名！
 queue.addLast(startName);              // 起点入队
 while (!queue.isEmpty()) {
     String current = queue.pollFirst();   // 队头出队
+    if (goal != null && current.equals(goal)) {
+        return;                            // 终点出队 → 停！（此时一定是最少段数）
+    }
     for (RouteSegment seg : graph.getNeighbours(current)) {
         String neighbour = seg.getDestination();
         if (!visited.contains(neighbour)) {
+            recordParent(neighbour, current);   // 记「从哪来的」→ 之后重建路径
             visit(neighbour);
+            if (goal != null && neighbour.equals(goal)) {
+                return;                        // 扩散时碰到终点也立刻停
+            }
             queue.addLast(neighbour);
         }
     }
@@ -403,9 +418,14 @@ T250 是**环线**：LRT Wangsa Maju → ... → Flat S2 Selatan → **Wangsa Me
     （同名站合并/距离近似/双向）
 
 16. **Q: If you had to find the shortest path between two stops, which traversal would you use?**
-    A: BFS — on an unweighted view of the graph, the first time BFS reaches a stop
-    is via the fewest segments. For real shortest distance we would upgrade to
-    Dijkstra's algorithm with the km weights. （BFS 最少段数；真最短路要 Dijkstra）
+    A: BFS — and we implemented exactly that: both searches ask for a GOAL stop
+    and terminate as soon as it is reached. Because BFS expands level by level,
+    the first time it reaches the goal is via a route with the fewest segments;
+    the path is rebuilt from parent links. DFS also finds A route but not
+    necessarily the shortest one — in our demo the same trip took 14 segments
+    with DFS but only 7 with BFS. For weighted shortest distance we would use
+    Dijkstra's algorithm. （BFS 最少段数已实现：goal state + parent 重建路径；
+    真按公里数最短要 Dijkstra）
 
 17. **Q: Why does the project have an interface (GraphADT) and an abstract class (GraphTraversal)?**
     A: The interface defines WHAT a route graph must do, so Main is programmed
@@ -457,10 +477,16 @@ T250 是**环线**：LRT Wangsa Maju → ... → Flat S2 Selatan → **Wangsa Me
 
 1. 启动即已载入 T250 数据（报出 26 站 / 28 段 / 13.1 km）；`1` → `5` 显示邻接表确认
 2. `3` 打开地图：指橙色 = 枢纽站，蓝 = 普通站，线上数字 = 公里
-3. `2` → `2` DFS 从 `LRT Wangsa Maju`：念前 5 站顺序，切地图看黄色高亮和序号徽章
-4. `2` → `3` BFS 同起点：对比「DFS 一条路走到底，BFS 一圈一圈」
-5. 稳定性演示：加重复站名 → 被拒；加自环 → 被拒；删 `TAR UMT Gate 4` → `5` 显示邻接表证明相连的边全没了
-6. 搜不存在的站 → 展示「Did you mean」建议
+3. `2` Route Search → `1` DFS：起点 `LRT Wangsa Maju`、终点 `Setapak Central`
+   → 念出找到的路径和段数（约 14 段），切地图看黄色高亮
+4. `2` → `2` BFS 同样起终点：对比段数（约 7 段，减半！）——这就是
+   「BFS 保证最少段数」的活证明
+5. `2` → `2` BFS 终点直接回车（不填 goal）：全网遍历模式，看逐层扩散顺序；
+   再试搜 `Kuching` 这类不存在/连不上的站看 UNREACHABLE 提示
+6. 稳定性演示：加重复站名 → 被拒；自环 → 被拒；删 `TAR UMT Gate 4` →
+   `5` 显示邻接表证明相连的边全没了
+7. 自由分支演示（老师已批准）：加一条 T250 之外的新边（如两个远站直连），
+   重跑 BFS 看最少段数路径变化
 
 ### 组内 Onboarding 会议建议（90 分钟）
 

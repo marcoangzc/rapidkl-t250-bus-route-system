@@ -39,10 +39,9 @@ travelled path are highlighted after every traversal.
 | 5 | Remove a route segment from both endpoints | Create Graph → 4 |
 | 6 | Display the complete network as an adjacency list | Create Graph → 5 |
 | 7 | Clear the whole network (to demonstrate building a graph from scratch) | Create Graph → 6 |
-| 8 | Search one stop: details, degree, all direct routes | Search → 1 |
-| 9 | DFS traversal from any stop, printed as a numbered visit-order table | Search → 2 |
-| 10 | BFS traversal from any stop, level-by-level ordering | Search → 3 |
-| 11 | JavaFX map window: vertices, weighted edges, legend; traversal overlay with numbered badges and highlighted path | View Network |
+| 8 | DFS goal-directed search: start stop -> destination stop; terminates as soon as the goal is reached and reports the discovered route, its segment count and total km | Search → 1 |
+| 9 | BFS goal-directed search with the same interface; guarantees the fewest-segments route on the unweighted view. Leaving the goal empty switches either algorithm into full-component traversal mode | Search → 2 |
+| 10 | JavaFX map window: vertices, weighted edges, legend; traversal overlay with numbered badges and highlighted path | View Network |
 
 ### 1d. Graph Representation Description
 
@@ -85,6 +84,9 @@ abstract `traverseFrom()` core is implemented by the `DepthFirstSearch`
 5. The default network is pre-loaded at startup so the system opens with the
    real T250 route; "Clear the whole network" (Create Graph → 6) empties it
    when a demonstration of building a graph from scratch is needed.
+6. With the tutor's approval, extra test edges outside the published T250
+   alignment may be added through Create Graph to demonstrate branching and
+   to compare DFS/BFS routes between arbitrary stops.
 
 ---
 
@@ -137,43 +139,56 @@ END ALGORITHM
 
 ### 2b. Graph Traversal
 
+Both traversals are goal-directed searches: an optional GOAL parameter makes
+them terminate early once the destination is reached (DFS unwinds the
+recursion with a boolean return; BFS stops when the goal is dequeued/enqueued).
+With no goal they traverse the whole connected component.
+
 ```
-ALGORITHM DFS(graph, start)
+ALGORITHM DFS(graph, start, goal)
     order ← empty list
     IF start not in graph THEN RETURN order
-    visited ← empty set
-    DfsVisit(start)
+    visited ← empty set; parent ← empty map
+    IF DfsVisit(start) = REACHED THEN   // boolean unwind stops the search
+        rebuild path by walking parent links backwards from goal
     RETURN order
 
     PROCEDURE DfsVisit(current)                // recursive
         ADD current TO visited                 // mark BEFORE recursing
         APPEND current TO order
+        IF current = goal THEN RETURN REACHED  // GOAL STATE found - stop
         FOR EACH segment e IN adjacency[current] DO
             neighbour ← e.destination
             IF neighbour NOT IN visited THEN
-                DfsVisit(neighbour)
+                parent[neighbour] ← current
+                IF DfsVisit(neighbour) = REACHED THEN RETURN REACHED
             END IF
         END FOR
+        RETURN NOT_REACHED
     END PROCEDURE
 END ALGORITHM
-// Time: O(V + E) with adjacency list
+// Time: O(V + E) worst case with adjacency list
 
-ALGORITHM BFS(graph, start)
+ALGORITHM BFS(graph, start, goal)
     order ← empty list
     IF start not in graph THEN RETURN order
-    visited ← {start}                          // mark at ENQUEUE time
+    visited ← {start}; parent ← empty map     // mark at ENQUEUE time
     queue ← empty queue; enqueue start
     WHILE queue not empty DO
         current ← dequeue queue
         APPEND current TO order
+        IF current = goal THEN EXIT WHILE      // first dequeue of the goal is
+                                               // via a fewest-segments route
         FOR EACH segment e IN adjacency[current] DO
             neighbour ← e.destination
             IF neighbour NOT IN visited THEN
                 ADD neighbour TO visited
+                parent[neighbour] ← current
                 enqueue neighbour
             END IF
         END FOR
     END WHILE
+    rebuild path by walking parent links backwards from goal
     RETURN order
 END ALGORITHM
 // Time: O(V + E); visits nearest stops first (fewest segments away)

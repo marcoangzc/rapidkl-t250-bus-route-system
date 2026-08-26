@@ -28,14 +28,24 @@ public class DepthFirstSearch extends GraphTraversal {
      * Recursive core. The stop is marked visited BEFORE recursing, so on a
      * cyclic route (T250 is a loop!) no stop can ever be entered twice and
      * the recursion always terminates.
+     *
+     * @return true as soon as the goal (if any) is reached - the true value
+     *         unwinds the whole recursion stack and stops the search early.
      */
-    private void dfsVisit(String current) {
+    private boolean dfsVisit(String current) {
         visit(current);
+        if (goal != null && current.equals(goal)) {
+            return true;                         // GOAL STATE reached - stop
+        }
         for (RouteSegment seg : graph.getNeighbours(current)) {
             String neighbour = seg.getDestination();
             if (!visited.contains(neighbour)) {
-                dfsVisit(neighbour);
+                recordParent(neighbour, current);
+                if (dfsVisit(neighbour)) {
+                    return true;                 // goal found deeper: unwind
+                }
             }
         }
+        return false;
     }
 }
