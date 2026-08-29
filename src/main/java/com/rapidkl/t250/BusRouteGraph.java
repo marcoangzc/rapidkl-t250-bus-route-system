@@ -251,22 +251,10 @@ public class BusRouteGraph implements GraphADT {
     // =====================================================================
 
     /**
-     * DEPTH FIRST SEARCH - delegates to the DepthFirstSearch concrete class,
-     * which extends the abstract GraphTraversal parent (template method
-     * pattern: the shared skeleton lives in the parent, the recursive core
-     * lives in the subclass).
-     *
-     * @param startName stop where the traversal begins
-     * @return the visit order; empty list if the start stop does not exist
-     */
-    @Override
-    public List<String> depthFirstSearch(String startName) {
-        return new DepthFirstSearch(this).traverse(startName);
-    }
-
-    /**
      * BREADTH FIRST SEARCH - delegates to the BreadthFirstSearch concrete
      * class (queue-based, visits nearest stops first, level by level).
+     * @param startName stop where the traversal begins
+     * @return the visit order; empty list if the start stop does not exist
      */
     @Override
     public List<String> breadthFirstSearch(String startName) {

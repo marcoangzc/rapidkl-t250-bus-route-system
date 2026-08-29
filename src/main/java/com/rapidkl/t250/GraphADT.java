@@ -84,9 +84,6 @@ public interface GraphADT {
     //  Traversal algorithms
     // =================================================================
 
-    /** Depth First Search visit order from a starting stop. */
-    List<String> depthFirstSearch(String startName);
-
     /** Breadth First Search visit order from a starting stop. */
     List<String> breadthFirstSearch(String startName);
 

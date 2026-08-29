@@ -9,23 +9,20 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * GraphTraversal - the ABSTRACT parent of every traversal algorithm.
+ * GraphTraversal - the ABSTRACT parent of the traversal algorithm.
  *
- * DFS and BFS share the same skeleton: validate the starting stop, reset
- * the shared state, run the algorithm core, return the visit order. Only
- * the CORE differs (recursion vs queue). That skeleton lives here as a
- * TEMPLATE METHOD (final, so subclasses cannot break it), while the core
- * is declared abstract and implemented by the subclasses:
+ * BFS uses this skeleton: validate the starting stop, reset
+ * the shared state, run the algorithm core, return the visit order.
+ * This skeleton lives here as a TEMPLATE METHOD (final, so subclasses 
+ * cannot break it), while the core is declared abstract and implemented 
+ * by the subclass:
  *
  *      GraphTraversal (abstract)          <- this class
- *          |-- DepthFirstSearch           <- recursive core
  *          |-- BreadthFirstSearch         <- queue-based core
  *
  * GOAL STATE: traverse(start, goal) turns the traversal into a classic
  * graph SEARCH - the algorithm stops as soon as the goal stop is reached,
  * and the route that led there can be rebuilt from the parent links.
- * Calling traverse(start) without a goal simply visits the whole
- * connected component.
  */
 public abstract class GraphTraversal {
 
