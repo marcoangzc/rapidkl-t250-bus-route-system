@@ -1,5 +1,4 @@
 package com.rapidkl.t250;
-
 import java.util.List;
 import java.util.Scanner;
 
@@ -67,7 +66,7 @@ public class Main {
         System.out.println("              LRT Wangsa Maju  <->  Setapak Sentral, Kuala Lumpur");
         System.out.println("============================================================================");
         System.out.println("  Graph data structure : Undirected weighted graph (adjacency list)");
-        System.out.println("  Traversal algorithms : Depth First Search & Breadth First Search");
+        System.out.println("  Traversal algorithms : Breadth First Search (Shortest Path)");
         System.out.println("============================================================================");
         System.out.println("[TIP] The T250 route is pre-loaded. Choose 3 to see the network map,");
         System.out.println("      or 1 (Create Graph) to add / remove stops and segments.");
@@ -78,7 +77,7 @@ public class Main {
         System.out.println("Main Menu (Press '0' to exit)");
         System.out.println("---------------------------------------------------------------------------");
         System.out.println("     1. Create Graph       (add / remove bus stops & route segments)");
-        System.out.println("     2. Route Search    (DFS / BFS with goal state)");
+        System.out.println("     2. Route Search    (BFS with goal state)");
         System.out.println("     3. View the Rapid KL Bus Route Network   (JavaFX map window)");
         System.out.println("     0. Exit");
         System.out.println("---------------------------------------------------------------------------");
@@ -266,12 +265,11 @@ public class Main {
         while (true) {
             System.out.println("# ROUTE SEARCH - GRAPH TRAVERSAL ALGORITHMS");
             System.out.println("---------------------------------------------------------------------------");
-            System.out.println("     1. DFS (Depth First Search): start stop -> goal stop");
-            System.out.println("     2. BFS (Breadth First Search): start stop -> goal stop");
+            System.out.println("     1. BFS (Breadth First Search): start stop -> goal stop");
             System.out.println("     0. Back to Main Menu");
             System.out.println("---------------------------------------------------------------------------");
 
-            int choice = readInt("Enter your selection (0 - 2): ");
+            int choice = readInt("Enter your selection (0 - 1): ");
 
             if (choice == 0) {
                 System.out.println();
@@ -279,17 +277,16 @@ public class Main {
             }
 
             switch (choice) {
-                case 1: traversalFlow(true);  break;
-                case 2: traversalFlow(false); break;
+                case 1: traversalFlow();  break;
                 default:
-                    System.out.println("[!] Invalid selection. Please enter 0 - 2 only.");
+                    System.out.println("[!] Invalid selection. Please enter 0 - 1 only.");
             }
             System.out.println();
         }
     }
 
     /**
-     * Search options 1 & 2 - run DFS or BFS with an optional GOAL STATE.
+     * Search options 1 run BFS with an optional GOAL STATE.
      *
      * The user enters a start stop and (optionally) a destination stop.
      * With a goal, the traversal stops as soon as the destination is
@@ -297,9 +294,8 @@ public class Main {
      * and total distance. Without a goal (press Enter), the whole
      * connected component is traversed and shown as a numbered list.
      */
-    private static void traversalFlow(boolean isDfs) {
-        String title = isDfs ? "# DFS Search (Depth First Search)"
-                             : "# BFS Search (Breadth First Search)";
+    private static void traversalFlow() { 
+        String title = "# BFS Search (Breadth First Search)";
         System.out.println();
         System.out.println(title);
         System.out.println("------------------------------------------------------------------");
@@ -311,13 +307,11 @@ public class Main {
         String goal = readOptionalExistingStop(
                 "Enter the DESTINATION stop (goal state), or press Enter to traverse ALL stops");
 
-        GraphTraversal algorithm = isDfs ? new DepthFirstSearch(network)
-                                         : new BreadthFirstSearch(network);
+        GraphTraversal algorithm = new BreadthFirstSearch(network);
         List<String> order = algorithm.traverse(start, goal);
 
         System.out.println();
-        System.out.println((isDfs ? "DFS" : "BFS") + " visit order starting from \""
-                + start + "\":");
+        System.out.println("BFS visit order starting from \"" + start + "\":");
         System.out.println("------------------------------------------------------------------");
         System.out.println("   No.  Bus Stop");
         System.out.println("------------------------------------------------------------------");
@@ -327,7 +321,7 @@ public class Main {
         System.out.println("------------------------------------------------------------------");
 
         if (!goal.isEmpty()) {
-            reportGoalSearch(algorithm, isDfs, start, goal);
+            reportGoalSearch(algorithm, start, goal);
         } else {
             System.out.printf("Visited %d of %d bus stops.%n",
                     order.size(), network.getStopCount());
@@ -335,14 +329,11 @@ public class Main {
                 System.out.println("      [i] " + (network.getStopCount() - order.size())
                         + " stop(s) are UNREACHABLE from here - the network is disconnected.");
             }
-            System.out.println(isDfs
-                    ? "      (DFS explores one branch as deep as possible before backtracking.)"
-                    : "      (BFS explores nearest stops first, level by level.)");
+            System.out.println("      (BFS explores nearest stops first, level by level.)");
         }
 
         lastTraversalOrder = order;
-        lastTraversalType = isDfs ? "DFS" : "BFS";
-        refreshViewerIfOpen();
+        lastTraversalType = "BFS"; 
         System.out.println("      (The map window highlights these stops in yellow with numbers"
                 + " when open.)");
     }
@@ -351,8 +342,7 @@ public class Main {
      * Prints the outcome of a goal-directed search: the found route with
      * segment count and total km, or a clear unreachable message.
      */
-    private static void reportGoalSearch(GraphTraversal algorithm,
-                                         boolean isDfs, String start, String goal) {
+    private static void reportGoalSearch(GraphTraversal algorithm, String start, String goal) {
         System.out.println("Stops explored before termination: "
                 + algorithm.getVisitCount() + " of " + network.getStopCount() + ".");
         System.out.println();
@@ -379,12 +369,7 @@ public class Main {
         System.out.printf("      Segments travelled : %d   |   Total distance: %.1f km%n",
                 path.size() - 1, totalKm);
 
-        if (!isDfs) {
-            System.out.println("      (BFS guarantee: this route uses the FEWEST segments possible.)");
-        } else {
-            System.out.println("      (DFS finds A valid route quickly, but it is not always the"
-                    + " fewest-segment one - compare with BFS!)");
-        }
+        System.out.println("      (BFS guarantee: this route uses the FEWEST segments possible.)");
     }
 
     /** Distance of the direct segment between two stops (0 if none). */
